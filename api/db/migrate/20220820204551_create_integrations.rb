@@ -15,5 +15,15 @@ class CreateIntegrations < ActiveRecord::Migration[7.0]
       t.references :integration, null: false, unsigned: true
       t.timestamps
     end
+
+    create_table :project_memberships, id: { type: :bigint, unsigned: true } do |t|
+      t.string :public_id, limit: 12, null: false, index: { unique: true }
+      t.integer :position
+      t.references :project, null: false, unsigned: true
+      t.references :organization_membership, null: false, unsigned: true
+      t.boolean    :remindable, null: false, default: true
+      t.bigint :user_id, null: false, unsigned: true
+      t.timestamps
+    end
   end
 end

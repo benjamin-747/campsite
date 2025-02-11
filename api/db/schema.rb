@@ -163,7 +163,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_12_002307) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "organization_id", null: false, unsigned: true
-    t.string "public_id", limit: 12, null: false
+    t.string "public_id", limit: 12
     t.integer "source"
     t.integer "creator_id"
     t.index ["creator_id"], name: "index_call_rooms_on_creator_id"
@@ -1127,6 +1127,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_12_002307) do
     t.index ["organization_membership_id"], name: "index_post_views_on_organization_membership_id"
     t.index ["post_id", "organization_membership_id"], name: "index_post_views_on_post_id_and_organization_membership_id", unique: true
     t.index ["post_id"], name: "index_post_views_on_post_id"
+    t.index ["post_id"], name: "index_post_views_on_post_id_and_user_id", unique: true
     t.index ["public_id"], name: "index_post_views_on_public_id", unique: true
     t.index ["read_at"], name: "index_post_views_on_read_at"
   end
