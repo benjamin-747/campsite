@@ -1,10 +1,10 @@
 # syntax = docker/dockerfile:experimental
-ARG RUBY_VERSION
+ARG RUBY_VERSION=3.3.4
 ARG VARIANT=jemalloc-slim
 FROM quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-${VARIANT} as base
 
-ARG NODE_VERSION
-ARG BUNDLER_VERSION
+ARG NODE_VERSION=20.18.2
+ARG BUNDLER_VERSION=2.5.11
 
 ARG RAILS_ENV=production
 ENV RAILS_ENV=${RAILS_ENV}
@@ -36,15 +36,13 @@ FROM base as build_deps
 ARG DEV_PACKAGES="git build-essential libpq-dev wget vim curl gzip xz-utils libsqlite3-dev default-libmysqlclient-dev ruby-mysql2"
 ENV DEV_PACKAGES ${DEV_PACKAGES}
 
-RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
-    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
-    apt-get update -qq && \
+RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y ${DEV_PACKAGES} \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 FROM build_deps as gems
 
-RUN gem install -N bundler -v ${BUNDLER_VERSION}
+RUN gem install -N bundler -v ${BUNDLER_VERSION:-2.5.11}
 
 COPY Gemfile* ./
 COPY .ruby-version ./
@@ -68,9 +66,7 @@ FROM base
 ARG PROD_PACKAGES="postgresql-client file vim curl gzip libsqlite3-0 default-libmysqlclient-dev ruby-mysql2 libjemalloc2 ffmpeg"
 ENV PROD_PACKAGES=${PROD_PACKAGES}
 
-RUN --mount=type=cache,id=prod-apt-cache,sharing=locked,target=/var/cache/apt \
-    --mount=type=cache,id=prod-apt-lib,sharing=locked,target=/var/lib/apt \
-    apt-get update -qq && \
+RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     ${PROD_PACKAGES} \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
