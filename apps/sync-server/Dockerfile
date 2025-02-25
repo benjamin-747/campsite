@@ -19,7 +19,7 @@ FROM base as builder
 RUN apt-get update -qq && \
   apt-get install -y build-essential pkg-config python-is-python3 ca-certificates
 WORKDIR /app
-RUN pnpm install turbo@2.0.9 --global
+RUN pnpm install turbo@2.0.9 --global --no-verify
 COPY . .
 RUN turbo prune @campsite/sync-server --docker
 WORKDIR /app
