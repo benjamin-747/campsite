@@ -64,7 +64,7 @@ production:
     password: <%= Rails.application.credentials.dig(:mysql, :password) %>
     database: campsite-api
     host: <%= Rails.application.credentials.dig(:mysql, :host) %>
-    ssl_mode: verify_identity
+    # ssl_mode: verify_identity
   primary_replica:
     <<: *default
     username: <%= Rails.application.credentials.planetscale_replica&.fetch(:username) %>
