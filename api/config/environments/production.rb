@@ -101,9 +101,11 @@ Rails.application.configure do
 
   config.active_record.async_query_executor = :global_thread_pool
 
-  config.hosts << "admin.campsite.design"
-  config.hosts << "auth.campsite.design"
-  config.hosts << "api.campsite.design"
+  config.hosts << "admin.benjamin747.com"
+  config.hosts << "auth.benjamin747.com"
+  config.hosts << "api.benjamin747.com"
+  config.hosts << "benjamin747.com"
+  config.hosts << /.*\.benjamin747\.com/
 
   config.hosts << "admin.campsite.co"
   config.hosts << "auth.campsite.co"
