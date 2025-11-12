@@ -8,6 +8,8 @@ Rails.application.configure do
   config.console1984.protected_environments = [:production, :staging]
   config.console1984.ask_for_username_if_empty = true
 
+  config.action_dispatch.tld_length = 2
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
