@@ -131,3 +131,21 @@ staging-openatom:
     host: <%= Rails.application.credentials.dig(:mysql, :host) %>
     ssl_mode: required
     replica: true
+
+staging-gitmono:
+  primary:
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:mysql, :username) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :password) %>
+    database: campsite_api_gitmono
+    host: <%= Rails.application.credentials.dig(:mysql, :host) %>
+    ssl_mode: required
+
+  primary_replica:
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:mysql, :username) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :password) %>
+    database: campsite_api_gitmono
+    host: <%= Rails.application.credentials.dig(:mysql, :host) %>
+    ssl_mode: required
+    replica: true
