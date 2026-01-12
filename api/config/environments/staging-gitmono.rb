@@ -8,8 +8,6 @@ Rails.application.configure do
   config.console1984.protected_environments = [:production, :staging]
   config.console1984.ask_for_username_if_empty = true
 
-  config.action_dispatch.tld_length = 2
-
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -103,11 +101,10 @@ Rails.application.configure do
 
   config.active_record.async_query_executor = :global_thread_pool
 
-  config.hosts << "admin.xuanwu.openatom.cn"
-  config.hosts << "auth.xuanwu.openatom.cn"
-  config.hosts << "api.xuanwu.openatom.cn"
-  config.hosts << "xuanwu.openatom.cn"
-  config.hosts << "campsite-api.mega-rag.svc.cluster.local"
+  config.hosts << "admin.gitmono.com"
+  config.hosts << "auth.gitmono.com"
+  config.hosts << "api.gitmono.com"
+  config.hosts << "gitmono.com"
   config.hosts << "localhost"
   config.hosts << "127.0.0.1"
 

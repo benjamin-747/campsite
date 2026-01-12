@@ -13,6 +13,13 @@ env:
 jobs:
   deploy-api:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - cluster: gitmega-com
+            service: campsite-api-staging-service-njx3hjyx
+          - cluster: gitmono-com-mega-app
+            service: campsite-api-service
     timeout-minutes: 30
     steps:
       # - name: GitHub App token
@@ -30,13 +37,12 @@ jobs:
       #   id: git-info
       #   run: .github/set-git-message
 
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Login to Amazon ECR Public
         id: login-ecr-public
@@ -54,12 +60,12 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG . --build-arg RUBY_VERSION=${{env.RUBY_VERSION}} --build-arg NODE_VERSION=${{env.NODE_VERSION}} --build-arg BUNDLER_VERSION=${{env.BUNDLER_VERSION}}
           docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
-      
+
       - name: Force ECS redeploy
         run: |
           aws ecs update-service \
-            --cluster gitmega-com \
-            --service campsite-api-staging-service-njx3hjyx \
+            --cluster ${{ matrix.cluster }} \
+            --service ${{ matrix.service }} \
             --force-new-deployment
         env:
           AWS_REGION: ap-southeast-2
@@ -89,9 +95,9 @@ jobs:
       #     thread_id: ${{ env.DEPLOY_QUEUE_THREAD_ID }}
       #     content: |
       #       **🛤️ API deployed**
-            
+
       #       [${{ github.actor }}](https://github.com/${{ github.actor }}) deployed ${{ steps.git-info.outputs.escaped-git-message }}
-            
+
       #       [${{ steps.git-info.outputs.git-sha }}](https://github.com/campsite/campsite/commit/${{ github.sha }}) · [Run logs](https://github.com/campsite/campsite/actions/runs/${{ github.run_id }})
 
       # - name: Notify failure
@@ -103,7 +109,7 @@ jobs:
       #     thread_id: ${{ env.DEPLOY_QUEUE_THREAD_ID }}
       #     content: |
       #       **🚨 API deploy failed!**
-            
+
       #       [${{ github.actor }}](https://github.com/${{ github.actor }}) tried to deploy ${{ steps.git-info.outputs.escaped-git-message }}
-            
+
       #       [${{ steps.git-info.outputs.git-sha }}](https://github.com/campsite/campsite/commit/${{ github.sha }}) · [Run logs](https://github.com/campsite/campsite/actions/runs/${{ github.run_id }})
