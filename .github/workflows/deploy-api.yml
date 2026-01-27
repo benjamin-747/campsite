@@ -11,7 +11,6 @@ env:
   NODE_VERSION: 18.16.1
   BUNDLER_VERSION: 2.3.14
 
-# Grant least-privilege permissions
 permissions:
   id-token: write
   contents: read
@@ -21,12 +20,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build single-arch images for each platform in parallel and push to ECR Public
-  build-push-single-arch:
+  # Build amd64 image in CI and push to ECR Public
+  build-push-amd64:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform: [linux/amd64, linux/arm64]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -47,28 +43,26 @@ jobs:
         with:
           registry-type: public
 
-      - name: Build & push image for ${{ matrix.platform }}
+      - name: Build & push amd64 image
         env:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          PLATFORM: ${{ matrix.platform }}
         run: |
           set -euo pipefail
           IMAGE_BASE="$REGISTRY/${{ env.REGISTRY_ALIAS }}/${{ env.REPOSITORY }}"
-          ARCH_SUFFIX=$(echo "$PLATFORM" | awk -F'/' '{print $2}')
           docker buildx build \
-            --platform "$PLATFORM" \
+            --platform linux/amd64 \
             --provenance=false \
             --sbom=false \
-            -t "$IMAGE_BASE:${{ env.IMAGE_TAG_BASE }}-$ARCH_SUFFIX" \
+            -t "$IMAGE_BASE:${{ env.IMAGE_TAG_BASE }}-amd64" \
             --build-arg RUBY_VERSION=${{ env.RUBY_VERSION }} \
             --build-arg NODE_VERSION=${{ env.NODE_VERSION }} \
             --build-arg BUNDLER_VERSION=${{ env.BUNDLER_VERSION }} \
             -f ./api/Dockerfile \
             --push ./api
 
-  # Create multi-arch manifest list
+  # Merge locally-built arm64 image (pushed separately) with CI-built amd64
   manifest:
-    needs: build-push-single-arch
+    needs: build-push-amd64
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS credentials
@@ -94,7 +88,6 @@ jobs:
             "$IMAGE_BASE:${{ env.IMAGE_TAG_BASE }}-arm64"
           docker manifest push "$IMAGE_BASE:${{ env.IMAGE_TAG_BASE }}"
 
-  # Redeploy ECS services on two clusters using same image tag
   deploy:
     needs: manifest
     runs-on: ubuntu-latest

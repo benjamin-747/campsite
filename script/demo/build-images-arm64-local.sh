@@ -70,23 +70,29 @@ if ! docker buildx version >/dev/null 2>&1; then
   exit 1
 fi
 
-# Decide whether to push or just load locally
-if $DO_PUSH; then
-  PUSH_FLAG="--push"
-  echo "Will push image after build."
-else
-  PUSH_FLAG="--load"  # keep locally
-  echo "Build only (no push)."
-fi
-
-# Build image
-docker buildx build \
+# Build image (always --load to ensure single-arch manifest)
+if ! docker buildx build \
   --platform "$PLATFORM" \
-  $PUSH_FLAG \
+  --load \
   -t "$IMAGE_NAME" \
   api \
   --build-arg RUBY_VERSION="$RUBY_VERSION" \
   --build-arg NODE_VERSION="$NODE_VERSION" \
-  --build-arg BUNDLER_VERSION="$BUNDLER_VERSION"
+  --build-arg BUNDLER_VERSION="$BUNDLER_VERSION"; then
+  echo "docker buildx build failed" >&2
+  exit 1
+fi
 
-echo "Image ready: $IMAGE_NAME"
+echo "Image built and loaded locally: $IMAGE_NAME"
+
+# Optionally push to registry
+if $DO_PUSH; then
+  echo "Pushing $IMAGE_NAME to registry …"
+  if ! docker push "$IMAGE_NAME"; then
+    echo "docker push failed" >&2
+    exit 1
+  fi
+  echo "Image pushed successfully: $IMAGE_NAME"
+else
+  echo "Push flag not set; skipping docker push."
+fi
