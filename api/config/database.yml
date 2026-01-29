@@ -153,16 +153,16 @@ staging-gitmono:
 demo:
   primary:
     <<: *default
-    # database: <%= ENV['ENABLE_PSDB'] ? 'campsite-api' : 'campsite_api_demo' %>
-    # host: <%= ENV['ENABLE_PSDB'] ? '127.0.0.1' : '' %>
-    # port: <%= ENV['ENABLE_PSDB'] ? 3305 : ENV.fetch("DB_PORT", 3306) %>
+    username: root
+    password: mysqladmin
     database: campsite_api_demo
-    host: localhost
+    host: mysql
     port: 3306
     ssl_mode: required
   primary_replica:
     <<: *default
-    database: <%= ENV['ENABLE_PSDB'] ? 'campsite-api' : 'campsite_api_demo' %>
-    host: <%= ENV['ENABLE_PSDB'] ? '127.0.0.1' : '' %>
-    port: <%= ENV['ENABLE_PSDB'] ? 3305 : ENV.fetch("DB_PORT", 3306) %>
+    username: root
+    password: mysqladmin
+    database: campsite_api_demo
+    host: mysql
     replica: true

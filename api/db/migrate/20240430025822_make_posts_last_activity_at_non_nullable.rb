@@ -1,10 +1,13 @@
 class MakePostsLastActivityAtNonNullable < ActiveRecord::Migration[7.1]
-  def up
-    Backfills::PostLastActivityAtBackfill.run(dry_run: false) if Rails.env.development? && !ENV['ENABLE_PSDB']
-    change_column :posts, :last_activity_at, :datetime, null: false
+  class MigrationPost < ActiveRecord::Base
+    self.table_name = "posts"
   end
 
-  def down
-    change_column :posts, :last_activity_at, :datetime
+  def up
+    MigrationPost.where(last_activity_at: nil).find_each do |post|
+      post.update_columns(last_activity_at: post.updated_at)
+    end
+
+    change_column :posts, :last_activity_at, :datetime, null: false
   end
 end

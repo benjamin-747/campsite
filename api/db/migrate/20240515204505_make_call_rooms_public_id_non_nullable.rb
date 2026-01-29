@@ -1,10 +1,13 @@
 class MakeCallRoomsPublicIdNonNullable < ActiveRecord::Migration[7.1]
-  def up
-    Backfills::CallRoomsPublicIdBackfill.run(dry_run: false) if Rails.env.development? && !ENV['ENABLE_PSDB']
-    change_column :call_rooms, :public_id, :string, limit: 12, null: false
+  class MigrationCallRoom < ActiveRecord::Base
+    self.table_name = "call_rooms"
   end
 
-  def down
-    change_column :call_rooms, :public_id, :string, limit: 12
+  def up
+    MigrationCallRoom.where(public_id: nil).find_each do |room|
+      room.update_columns(public_id: SecureRandom.alphanumeric(12))
+    end
+
+    change_column :call_rooms, :public_id, :string, limit: 12, null: false
   end
 end
