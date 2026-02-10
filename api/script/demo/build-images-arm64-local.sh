@@ -75,7 +75,7 @@ if ! docker buildx build \
   --platform "$PLATFORM" \
   --load \
   -t "$IMAGE_NAME" \
-  api \
+  . \
   --build-arg RUBY_VERSION="$RUBY_VERSION" \
   --build-arg NODE_VERSION="$NODE_VERSION" \
   --build-arg BUNDLER_VERSION="$BUNDLER_VERSION"; then
