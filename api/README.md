@@ -9,7 +9,7 @@ This is the API that powers https://app.campsite.com
 
 ### Running the app
 
-The API can be started with `script/server`. The API is accessible on http://api.gitmono.test:3001 and the frontend on http://app.gitmono.test:3000 (after you've run `vercel dev` in that repo).
+The API can be started with `script/server`. The API is accessible on http://api.gitmono.test:3001 and the frontend on http://app.gitmono.test (after you've run `vercel dev` in that repo).
 
 ### Useful commands & shortcuts
 

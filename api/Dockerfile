@@ -83,6 +83,8 @@ ENV MALLOC_CONF=dirty_decay_ms:1000,narenas:2,background_thread:true
 
 COPY . .
 
+RUN rm -f config/credentials/*.key
+
 RUN SECRET_KEY_BASE=dummy bundle exec rails assets:precompile
 
 EXPOSE 8080

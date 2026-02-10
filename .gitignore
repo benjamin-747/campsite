@@ -79,9 +79,7 @@ api/config/credentials/production.key
 api/config/credentials/development.key
 api/config/credentials/development.yml.enc
 
-api/config/credentials/staging.key
-api/config/credentials/staging-nju.key
-api/config/credentials/staging-openatom.key
+api/config/credentials/**.key
 # Ignore ngrok.yaml, we'll generate from ngrok.yml.template
 api/ngrok.yaml
 
