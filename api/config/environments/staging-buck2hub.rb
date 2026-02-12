@@ -115,4 +115,5 @@ Rails.application.configure do
     /172\.31\.\d+\.\d+/,
     /192\.168\.\d+\.\d+/,
   ]
+  config.x.app_name = "Buck2Hub"
 end

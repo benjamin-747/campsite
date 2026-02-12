@@ -1,4 +1,4 @@
-<% @page_title = "Sign in - Campsite" %>
+<% @page_title = "Sign in - #{Rails.configuration.x.app_name}" %>
 
 <main class="outer-container">
   <div class="inner-container">
@@ -11,7 +11,7 @@
       <h2 class="page-title">Sign in</h2>
 
       <span class="w-full text-sm text-tertiary">
-        Login to Mega with Github Now
+        Login to <%= Rails.configuration.x.app_name %> with Github Now
       </span>
     </div>
 
