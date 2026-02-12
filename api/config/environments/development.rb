@@ -11,6 +11,8 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
+  # config.action_dispatch.tld_length = 2
+
   # Do not eager load code on boot.
   config.eager_load = false
 
@@ -84,4 +86,8 @@ Rails.application.configure do
   config.hosts << "auth.gitmono.test"
   config.hosts << "api.gitmono.test"
   config.hosts << "gitmono.test"
+  config.hosts << "auth.xuanwu.openatom.cn:3001"
+  # config.hosts << "auth.gitmono.local:3001"
+
+  config.x.app_name = "Mega Dev"
 end

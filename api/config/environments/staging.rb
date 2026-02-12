@@ -106,7 +106,6 @@ Rails.application.configure do
   config.hosts << "api.gitmega.com"
   config.hosts << "gitmega.com"
 
-
   # config.hosts << "mega-campsite-api.fly.dev"
 
   # 允许 AWS VPC 中常见的私有 IP 网段访问
@@ -120,14 +119,5 @@ Rails.application.configure do
   # required to access the app via Fly private network
   # config.hosts << "mega-campsite-api.internal"
 
-  # Rails.application.config.middleware.insert_before 0, Rack::Cors do
-  #   allow do
-  #     origins 'http://admin.gitmega.com', 'http://auth.gitmega.com', 'http://api.gitmega.com', 'http://home.gitmega.com'
-
-  #     resource '*',
-  #       headers: :any,
-  #       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-  #       credentials: true
-  #   end
-  # end
+  config.x.app_name = "Mega App"
 end
