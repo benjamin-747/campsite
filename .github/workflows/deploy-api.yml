@@ -5,10 +5,9 @@ on:
 
 env:
   REGISTRY_ALIAS: m8q5m4u3
-  REPOSITORY: mega
-  IMAGE_TAG_BASE: campsite-0.1.0-pre-release
+  REPOSITORY: mega/campsite-api
+  IMAGE_TAG_BASE: 0.1.0-pre-release
   GCP_PROJECT_ID: infra-20250121-20260121-0235
-  GCP_REPOSITORY: mega
   RUBY_VERSION: 3.3.4
   NODE_VERSION: 18.16.1
   BUNDLER_VERSION: 2.3.14
@@ -65,7 +64,7 @@ jobs:
       - name: Build & push amd64 image (AWS + GCP)
         env:
           AWS_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          GCP_IMAGE_BASE: us-central1-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_REPOSITORY }}/${{ env.REPOSITORY }}
+          GCP_IMAGE_BASE: us-central1-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}
         run: |
           set -euo pipefail
 
@@ -113,7 +112,7 @@ jobs:
           docker manifest push "$IMAGE_BASE:${{ env.IMAGE_TAG_BASE }}"
 
   deploy-aws:
-    if: ${{ github.repository == 'web3infra-foundation/mega' }}
+    if: ${{ github.repository == 'web3infra-foundation/campsite' }}
     needs: manifest
     runs-on: ubuntu-latest
     strategy:
@@ -137,7 +136,7 @@ jobs:
 
   deploy-gcp:
     needs: manifest
-    if: ${{ github.repository == 'web3infra-foundation/mega' }}
+    if: ${{ github.repository == 'web3infra-foundation/campsite' }}
     runs-on: ubuntu-latest
     steps:
       - name: Auth to GCP
@@ -148,7 +147,7 @@ jobs:
       - name: Deploy to Cloud Run (force new revision)
         env:
           REGION: asia-east1
-          SERVICE_NAME: buck2-hub-campsite
+          SERVICE_NAME: buck2hub-campsite
         run: |
           set -euo pipefail
 
