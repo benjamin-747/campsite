@@ -6,7 +6,7 @@ on:
 env:
   REGISTRY_ALIAS: m8q5m4u3
   REPOSITORY: mega/campsite-api
-  IMAGE_TAG_BASE: 0.1.0-pre-release
+  IMAGE_TAG_BASE: latest
   GCP_PROJECT_ID: infra-20250121-20260121-0235
   RUBY_VERSION: 3.3.4
   NODE_VERSION: 18.16.1
