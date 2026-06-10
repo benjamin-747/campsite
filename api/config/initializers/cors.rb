@@ -17,6 +17,8 @@ Rails.application.config.middleware.insert_before(0, Rack::Cors) do
       "localhost:3000",
       "http://app.gitmono.local",
       "http://local.gitmega.com",
+      "http://local.xuanwu.openatom.cn",
+      "https://local.xuanwu.openatom.cn",
       "https://git.gitmega.com",
       "http://app.gitmega.nju:8080",
       "https://app.xuanwu.openatom.cn",
