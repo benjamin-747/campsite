@@ -48,14 +48,16 @@ RUN gem install -N bundler -v ${BUNDLER_VERSION}
 
 COPY Gemfile* ./
 COPY .ruby-version ./
-RUN bundle install &&  rm -rf vendor/bundle/ruby/*/cache
+RUN --mount=type=cache,id=bundle-cache,sharing=locked,target=/usr/local/bundle/cache \
+    bundle install && rm -rf vendor/bundle/ruby/*/cache
 
 FROM build_deps as node_modules
 
 COPY package*json ./
 COPY yarn.* ./
 
-RUN if [ -f "yarn.lock" ]; then \
+RUN --mount=type=cache,id=yarn-cache,sharing=locked,target=/usr/local/share/.cache/yarn \
+    if [ -f "yarn.lock" ]; then \
     yarn install; \
     elif [ -f "package-lock.json" ]; then \
     npm install; \
