@@ -4,6 +4,10 @@ domain =
   case Rails.env
   when "staging-openatom"
     ".xuanwu.openatom.cn"
+  when "openatom-rk8s"
+    ".rk8s.xuanwu.openatom.cn"
+  when "openatom-rust"
+    ".rust.xuanwu.openatom.cn"
   else
     :all
   end

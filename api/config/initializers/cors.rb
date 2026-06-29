@@ -22,6 +22,8 @@ Rails.application.config.middleware.insert_before(0, Rack::Cors) do
       "https://git.gitmega.com",
       "http://app.gitmega.nju:8080",
       "https://app.xuanwu.openatom.cn",
+      "https://app.rk8s.xuanwu.openatom.cn",
+      "https://app.rust.xuanwu.openatom.cn",
       "https://demo.gitmono.com"
 
     resource "*",
