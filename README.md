@@ -6,7 +6,7 @@ This is an open source version of the [Campsite](https://www.campsite.com/) app.
 
 ```bash
 cd api
-docker buildx build . -t mega:campsite-0.1.0-pre-release --build-arg RUBY_VERSION=3.3.4 --build-arg NODE_VERSION=23.10.0 --build-arg BUNDLER_VERSION=2.6.5
+docker buildx build . -t mega/campsite-api:latest --build-arg RUBY_VERSION=3.3.4 --build-arg NODE_VERSION=23.10.0 --build-arg BUNDLER_VERSION=2.6.5
 ```
 
 ## Local dev setup

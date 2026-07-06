@@ -10,6 +10,9 @@ A multi-arch manifest is **not** created here – that happens later in the CI w
 * Supports **build-only** (default) or **build & push** via `--push` flag.
 * Adds an architecture suffix (`-amd64` or `-arm64`) to the provided tag.
 * Pass-through build arguments for Ruby, Node and Bundler versions.
+* Persists build cache across repeated builds:
+  * local builds: `~/.cache/campsite-api-buildx/<arch>` (override with `BUILDX_CACHE_DIR`)
+  * `--push` builds: `public.ecr.aws/m8q5m4u3/mega/campsite-api:buildcache-<arch>`
 
 ## Prerequisites
 
@@ -30,7 +33,7 @@ A multi-arch manifest is **not** created here – that happens later in the CI w
 ```
 
 * `IMAGE_TAG` (optional) – base tag without architecture suffix.  
-  Defaults to `campsite-0.1.0-pre-release`.
+  Defaults to `latest`.
 * `--push` (optional) – push the image to the registry instead of only loading it locally.
 
 ### Examples
@@ -52,9 +55,12 @@ Build and push:
 
 The resulting image names follow this pattern:
 ```
-public.ecr.aws/m8q5m4u3/mega:<IMAGE_TAG>-<arch>
+public.ecr.aws/m8q5m4u3/mega/campsite-api:<IMAGE_TAG>-<arch>
 ```
-where `<arch>` is `amd64` or `arm64`.
+where `<arch>` is `amd64` or `arm64`. For example, on arm64 with the default tag:
+```
+public.ecr.aws/m8q5m4u3/mega/campsite-api:latest-arm64
+```
 
 ## How It Works
 

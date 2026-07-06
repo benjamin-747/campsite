@@ -114,7 +114,7 @@ staging-nju:
     ssl_mode: required
     replica: true
 
-staging-openatom:
+openatom-dev:
   primary:
     <<: *default
     username: <%= Rails.application.credentials.dig(:mysql, :username) %>

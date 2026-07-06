@@ -107,7 +107,7 @@ Rails.application.configure do
   config.hosts << "auth.xuanwu.openatom.cn"
   config.hosts << "api.xuanwu.openatom.cn"
   config.hosts << "xuanwu.openatom.cn"
-  config.hosts << "campsite-api.buck2hub.svc.cluster.local:8080"
+  config.hosts << "campsite-api.mega-dev.svc.cluster.local:8080"
   config.hosts << "localhost"
   config.hosts << "127.0.0.1"
 
