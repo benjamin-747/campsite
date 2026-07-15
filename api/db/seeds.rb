@@ -8,8 +8,8 @@ if Rails.env.development?
     name: "Zapier",
     provider: :zapier,
     avatar_path: "static/avatars/service-zapier.png",
-    redirect_uri: Rails.application.credentials.zapier.redirect_uri, 
-    confidential: true, 
+    redirect_uri: Rails.application.credentials.zapier.redirect_uri,
+    confidential: true,
     scopes: "read_organization write_organization",
     uid: Rails.application.credentials.zapier.client_id,
     secret: Doorkeeper.config.application_secret_strategy.transform_secret(Rails.application.credentials.zapier.client_secret),
@@ -19,25 +19,41 @@ if Rails.env.development?
     name: "Cal.com",
     provider: :cal_dot_com,
     avatar_path: "static/avatars/service-cal-dot-com.png",
-    redirect_uri: Rails.application.credentials.cal_dot_com.redirect_uri, 
-    confidential: true, 
+    redirect_uri: Rails.application.credentials.cal_dot_com.redirect_uri,
+    confidential: true,
     uid: Rails.application.credentials.cal_dot_com.client_id,
     secret: Doorkeeper.config.application_secret_strategy.transform_secret(Rails.application.credentials.cal_dot_com.client_secret),
   )
 
-  # Set up the default dev org
+  # Set up the default dev org (users + memberships). Content seeding is best-effort.
   generator = DemoOrgs::Generator.new
-  generator.update_content
 
   admin_member = generator.admin_membership
   admin_user = admin_member.user
 
   # Make Rick "staff" (a private Campsite property - allows admin access, among other things)
   admin_user.update!(staff: true)
-  
+
+  # Mega org + join token used by moon auto-join (must match production plaintext /
+  # moon/apps/web/middleware.ts and pages/index.tsx). Encrypt with local AR keys —
+  # do not paste production ciphertext into SQL.
+  mega_join_token = "s3AX1iyAx3sgGNygiM67"
+  mega = Organization.find_by(slug: "mega")
+  mega ||= Organization.create_organization(creator: admin_user, name: "Mega", slug: "mega")
+  mega.update!(invite_token: mega_join_token) if mega.invite_token != mega_join_token
+  mega.create_membership!(user: admin_user, role_name: :admin) unless mega.member?(admin_user)
+
+  begin
+    generator.update_content
+  rescue StandardError => e
+    warn "[seeds] DemoOrgs content seeding skipped: #{e.class}: #{e.message}"
+  end
+
   # Create an empty organization
-  alt_org = Organization.create_organization(creator: admin_user, name: "Deserted Dunes", slug: "deserted-dunes")
-  alt_org.create_membership!(user: admin_user, role_name: :admin)
+  unless Organization.exists?(slug: "deserted-dunes")
+    alt_org = Organization.create_organization(creator: admin_user, name: "Deserted Dunes", slug: "deserted-dunes")
+    alt_org.create_membership!(user: admin_user, role_name: :admin)
+  end
 
   OauthApplication.create(
     name: "figma-plugin",

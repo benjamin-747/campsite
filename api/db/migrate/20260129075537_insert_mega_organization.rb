@@ -1,5 +1,16 @@
+# frozen_string_literal: true
+
+# Seeds the Mega org used by moon auto-join (`middleware.ts` / `pages/index.tsx`).
+# Invite token plaintext must match production / frontend hardcode: s3AX1iyAx3sgGNygiM67.
+# Encrypt with the current environment's ActiveRecord keys (do NOT paste production ciphertext).
 class InsertMegaOrganization < ActiveRecord::Migration[7.2]
+  MEGA_JOIN_TOKEN = "s3AX1iyAx3sgGNygiM67"
+
   def up
+    return if connection.select_value("SELECT 1 FROM organizations WHERE slug = 'mega' LIMIT 1")
+
+    encrypted_token = Organization.new(invite_token: MEGA_JOIN_TOKEN).ciphertext_for(:invite_token)
+
     execute <<~SQL
       INSERT INTO organizations (
         id,
@@ -32,7 +43,7 @@ class InsertMegaOrganization < ActiveRecord::Migration[7.2]
         'yetianxing2014@gmail.com',
         null,
         null,
-        '{"p":"UraltlnPtlQ0htiWNJEGhXCadOc=","h":{"iv":"vAv4ARH1eZBisB61","at":"sw4RnNBOEnYW0L28q1eGJQ=="}}',
+        #{connection.quote(encrypted_token)},
         1,
         null,
         '2025-05-21 09:17:53.777353',
@@ -49,4 +60,7 @@ class InsertMegaOrganization < ActiveRecord::Migration[7.2]
     SQL
   end
 
+  def down
+    execute "DELETE FROM organizations WHERE slug = 'mega'"
+  end
 end
