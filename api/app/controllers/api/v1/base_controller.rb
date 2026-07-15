@@ -59,6 +59,8 @@ module Api
       def require_authenticated_user
         return if user_signed_in?
 
+        log_invalid_session_cookie_auth_failure if invalid_session_cookie?
+
         respond_to do |format|
           format.html do
             store_location_for(:user, request.fullpath)
@@ -225,6 +227,26 @@ module Api
       end
 
       private
+
+      def invalid_session_cookie?
+        request.get_header("action_dispatch.invalid_session_cookie").present?
+      end
+
+      def log_invalid_session_cookie_auth_failure
+        reason = request.get_header("action_dispatch.invalid_session_cookie")
+        cookie_key = request.get_header("action_dispatch.invalid_session_cookie_key") ||
+          SessionCookie::Logger::SESSION_COOKIE_KEY
+
+        Rails.logger.warn(
+          "[session_cookie] authentication failed due to invalid cookie " \
+          "reason=#{reason} " \
+          "key=#{cookie_key} " \
+          "path=#{request.path} " \
+          "method=#{request.request_method} " \
+          "host=#{request.host} " \
+          "ip=#{client_ip}",
+        )
+      end
 
       def authorize_rack_mini_profiler
         return unless current_user&.staff?

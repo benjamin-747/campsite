@@ -8,7 +8,7 @@ Rails.application.configure do
   config.console1984.protected_environments = [:production, :staging]
   config.console1984.ask_for_username_if_empty = true
 
-  config.action_dispatch.tld_length = 2
+  config.action_dispatch.tld_length = 3
 
   # Code is not reloaded between requests.
   config.cache_classes = true
@@ -103,11 +103,11 @@ Rails.application.configure do
 
   config.active_record.async_query_executor = :global_thread_pool
 
-  config.hosts << "admin.xuanwu.openatom.cn"
-  config.hosts << "auth.xuanwu.openatom.cn"
-  config.hosts << "api.xuanwu.openatom.cn"
-  config.hosts << "xuanwu.openatom.cn"
-  config.hosts << "campsite-api.mega-rag.svc.cluster.local"
+  config.hosts << "admin.rust.xuanwu.openatom.cn"
+  config.hosts << "auth.rust.xuanwu.openatom.cn"
+  config.hosts << "api.rust.xuanwu.openatom.cn"
+  config.hosts << "rust.xuanwu.openatom.cn"
+  config.hosts << "campsite-api.mega-rust.svc.cluster.local:8080"
   config.hosts << "localhost"
   config.hosts << "127.0.0.1"
 
@@ -118,4 +118,6 @@ Rails.application.configure do
     /172\.31\.\d+\.\d+/,
     /192\.168\.\d+\.\d+/,
   ]
+
+  config.x.app_name = "Mega Rust"
 end

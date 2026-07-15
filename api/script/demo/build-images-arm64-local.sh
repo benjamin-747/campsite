@@ -15,7 +15,7 @@ set -euo pipefail
 
 REGISTRY_ALIAS="m8q5m4u3"               # Public ECR alias
 REGISTRY="public.ecr.aws/${REGISTRY_ALIAS}"
-REPOSITORY="mega"
+REPOSITORY="mega/campsite-api"
 
 # ----------------------------------------
 # Parse CLI arguments
@@ -35,7 +35,7 @@ done
 set -- "${POSITIONAL[@]}"
 
 # Image tag via first positional arg, or env, or default
-IMAGE_TAG_BASE="${IMAGE_TAG:-${1:-campsite-0.1.0-pre-release}}"
+IMAGE_TAG_BASE="${IMAGE_TAG:-${1:-latest}}"
 
 # Detect host architecture and map to Docker platform / suffix
 ARCH_NATIVE="$(uname -m)"
@@ -61,6 +61,9 @@ BUNDLER_VERSION="${BUNDLER_VERSION:-2.3.14}"
 
 IMAGE_TAG="${IMAGE_TAG_BASE}-${ARCH_SUFFIX}"
 IMAGE_NAME="${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
+LATEST_ARCH_TAG="${REGISTRY}/${REPOSITORY}:latest-${ARCH_SUFFIX}"
+CACHE_IMAGE="${REGISTRY}/${REPOSITORY}:buildcache-${ARCH_SUFFIX}"
+CACHE_DIR="${BUILDX_CACHE_DIR:-${HOME}/.cache/campsite-api-buildx/${ARCH_SUFFIX}}"
 
 echo "Building ${IMAGE_NAME} (${PLATFORM}) …"
 
@@ -70,29 +73,39 @@ if ! docker buildx version >/dev/null 2>&1; then
   exit 1
 fi
 
-# Build image (always --load to ensure single-arch manifest)
-if ! docker buildx build \
-  --platform "$PLATFORM" \
-  --load \
-  -t "$IMAGE_NAME" \
-  . \
-  --build-arg RUBY_VERSION="$RUBY_VERSION" \
-  --build-arg NODE_VERSION="$NODE_VERSION" \
-  --build-arg BUNDLER_VERSION="$BUNDLER_VERSION"; then
+# Build image with persistent layer cache across repeated builds.
+BUILD_ARGS=(
+  --platform "$PLATFORM"
+  --provenance=false
+  --sbom=false
+  -t "$IMAGE_NAME"
+  -t "$LATEST_ARCH_TAG"
+  --build-arg "RUBY_VERSION=$RUBY_VERSION"
+  --build-arg "NODE_VERSION=$NODE_VERSION"
+  --build-arg "BUNDLER_VERSION=$BUNDLER_VERSION"
+  --cache-from "type=registry,ref=${CACHE_IMAGE}"
+  --cache-from "type=registry,ref=${IMAGE_NAME}"
+)
+
+if $DO_PUSH; then
+  BUILD_ARGS+=(--cache-to "type=registry,ref=${CACHE_IMAGE},mode=max" --push)
+else
+  mkdir -p "$CACHE_DIR"
+  BUILD_ARGS+=(--cache-from "type=local,src=${CACHE_DIR}")
+  BUILD_ARGS+=(--cache-to "type=local,dest=${CACHE_DIR},mode=max" --load)
+fi
+
+if ! docker buildx build "${BUILD_ARGS[@]}" .; then
   echo "docker buildx build failed" >&2
   exit 1
 fi
 
-echo "Image built and loaded locally: $IMAGE_NAME"
+echo "Image built successfully: $IMAGE_NAME"
 
-# Optionally push to registry
 if $DO_PUSH; then
-  echo "Pushing $IMAGE_NAME to registry …"
-  if ! docker push "$IMAGE_NAME"; then
-    echo "docker push failed" >&2
-    exit 1
-  fi
   echo "Image pushed successfully: $IMAGE_NAME"
+  echo "Build cache saved to: ${CACHE_IMAGE}"
 else
-  echo "Push flag not set; skipping docker push."
+  echo "Image loaded locally: $IMAGE_NAME"
+  echo "Build cache saved to: ${CACHE_DIR}"
 fi

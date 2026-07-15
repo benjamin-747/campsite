@@ -82,10 +82,10 @@ Rails.application.configure do
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
 
-  config.hosts << "admin.gitmono.test"
-  config.hosts << "auth.gitmono.test"
-  config.hosts << "api.gitmono.test"
-  config.hosts << "gitmono.test"
+  config.hosts << "admin.gitmono.local"
+  config.hosts << "auth.gitmono.local:3001"
+  config.hosts << "api.gitmono.local"
+  config.hosts << "gitmono.local"
   config.hosts << "auth.xuanwu.openatom.cn:3001"
   # config.hosts << "auth.gitmono.local:3001"
 

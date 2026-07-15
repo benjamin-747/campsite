@@ -114,7 +114,7 @@ staging-nju:
     ssl_mode: required
     replica: true
 
-staging-openatom:
+openatom-dev:
   primary:
     <<: *default
     username: <%= Rails.application.credentials.dig(:mysql, :username) %>
@@ -128,6 +128,42 @@ staging-openatom:
     username: <%= Rails.application.credentials.dig(:mysql, :username) %>
     password: <%= Rails.application.credentials.dig(:mysql, :password) %>
     database: campsite_api
+    host: <%= Rails.application.credentials.dig(:mysql, :host) %>
+    ssl_mode: required
+    replica: true
+
+openatom-rk8s:
+  primary:
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:mysql, :username) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :password) %>
+    database: campsite_api_rk8s
+    host: <%= Rails.application.credentials.dig(:mysql, :host) %>
+    ssl_mode: required
+
+  primary_replica:
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:mysql, :username) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :password) %>
+    database: campsite_api_rk8s
+    host: <%= Rails.application.credentials.dig(:mysql, :host) %>
+    ssl_mode: required
+    replica: true
+
+openatom-rust:
+  primary:
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:mysql, :username) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :password) %>
+    database: campsite_api_rust
+    host: <%= Rails.application.credentials.dig(:mysql, :host) %>
+    ssl_mode: required
+
+  primary_replica:
+    <<: *default
+    username: <%= Rails.application.credentials.dig(:mysql, :username) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :password) %>
+    database: campsite_api_rust
     host: <%= Rails.application.credentials.dig(:mysql, :host) %>
     ssl_mode: required
     replica: true
