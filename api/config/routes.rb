@@ -91,6 +91,11 @@ Rails.application.routes.draw do
     get "/organization-by-token/:token", to: "public_organizations#show", as: :public_organization
     post "/organizations", to: "organizations#create"
 
+    # Service-to-service: mono identity backfill (X-Mega-Internal-Secret).
+    get "/organizations/:org_slug/internal/member_identities",
+      to: "internal/member_identities#index",
+      as: :organization_internal_member_identities
+
     resources :public_projects, only: [:show], param: :token
 
     resources :image_urls, only: :create
